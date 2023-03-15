@@ -1,10 +1,17 @@
 const router = require("express").Router();
-const { User } = require("../../models");
+const { User, Friends } = require("../../models");
 
 // GET all users
 router.get("/", async (req, res) => {
   try {
-    const userData = await User.findAll();
+    const userData = await User.findAll({
+      include: [
+        {
+          through: Friends,
+          as: "friends_table"
+        }
+     ]
+    });
     res.status(200).json(userData);
   } catch (err) {
     res.status(500).json(err);
@@ -29,7 +36,38 @@ router.get("/:id", async (req, res) => {
     res.status(500).json(err);
   }
 });
+//Add friends
+// router.put("/:id", async (req, res) => {
 
+//   User.update(req.body, {
+//     where: {
+//       id: req.params.id
+//     }
+
+//     .then(user => {
+//        if (req.body.friends_ids && req.body.friends_ids.length) {
+//         const friendsList = Friends.findAll({
+//           where: { user_id: req.params.id }
+//         });
+      
+//          const friendsListIds = friendsList.map(({ friends_id }) => {
+//             friends_id
+//           })
+//          const newFriends = req.body.friends
+//            .filter(friend_id => !friendsListIds.includes(friend_id))
+//            .map((friend_id) => {
+//              return {
+//                user_id: req.params.id,
+//                friend_id
+//            }
+//          })
+       
+//       }
+
+//       return res.json(product);
+//     })
+
+// });
 
 // CREATE a user
 router.post("/", async (req, res) => {
